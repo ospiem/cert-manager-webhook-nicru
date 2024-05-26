@@ -14,7 +14,7 @@ This solver allows you to use cert-manager with the Nicru API. Documentation on 
 
 ### Preparation
 First, you must [register](https://www.nic.ru/help/oauth-server_3642.html#reg) the application in your personal Nicru account.
-After registering, you will receive the `client_id` and `client_secret` of the OAuth 2.0 protocol, which are needed to get the tokens.
+After registering, you will receive the `app_id` and `app_secret` of the OAuth 2.0 protocol, which are needed to get the tokens.
 
 Then you must get 2 tokens: the first token to work with the API, the second token to reissue tokens.
 You have to run this command to get them:
@@ -24,8 +24,8 @@ curl --location --request POST 'https://api.nic.ru/oauth/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'grant_type=password' \
 --data-urlencode 'password=<YOUR_PASSWORD_FOR_PERSONAL_ACCOUNT>' \
---data-urlencode 'client_id=<YOUR_CLIENT_ID>' \
---data-urlencode 'client_secret=<YOUR_CLIENT_SECRET>' \
+--data-urlencode 'client_id=<YOUR_APP_ID>' \
+--data-urlencode 'client_secret=<YOUR_APP_SECRET>' \
 --data-urlencode 'username=<YOUR_LOGIN_FOR_PERSONAL_ACCOUNT>' \
 --data-urlencode 'scope=.*' \
 --data-urlencode 'offline=999999'
@@ -57,21 +57,23 @@ You must also specify your namespace with the `cert-manager`.
 
 ```yaml
 certManager:
-  namespace: your-namespace-cert-manager
+  namespace: your-cert-manager-namespace
   serviceAccountName: cert-manager
 ```
 
 ### Create a secret with tokens
-Create the `nicru-tokens.yaml` file with the following contents:
+Create the `nicru-tokens.yaml` file with the following content:
 ```yaml
 apiVersion: v1
 kind: Secret
 metadata:
   name: nicru-tokens
-  namespace: your-namespace-cert-manager
+  namespace: your-cert-manager-namespace
 data:
   REFRESH_TOKEN: <REFRESH_TOKEN_BASE64_FORMAT>
   ACCESS_TOKEN: <ACCESS_TOKEN_BASE64_FORMAT>
+  APP_ID: <APP_ID>
+  APP_SECRET: <APP_SECRET>
 type: Opaque
 ```
 
