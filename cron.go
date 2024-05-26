@@ -42,7 +42,10 @@ func (c *DNSProviderSolver) updateTokens() error {
 	params := fmt.Sprintf("grant_type=refresh_token&refresh_token=%s&client_id=%s&client_secret=%s", currentRefreshToken, appID, appSecret)
 	payload := strings.NewReader(params)
 
-	req, _ := http.NewRequest(http.MethodPost, oauthUrl, payload)
+	req, err := http.NewRequest(http.MethodPost, oauthUrl, payload)
+	if err != nil {
+		return fmt.Errorf("failed to generate request: %w", err)
+	}
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -86,7 +89,7 @@ func (c *DNSProviderSolver) patchSecret(newRefreshToken, newAccessToken string) 
 		return fmt.Errorf("failed to marshal secret: %s", err)
 	}
 
-	_, err = c.client.CoreV1().Secrets(Namespace).Patch(context.TODO(), nameSecret, types.StrategicMergePatchType, payload, metav1.PatchOptions{})
+	_, err = c.client.CoreV1().Secrets(Namespace).Patch(context.Background(), nameSecret, types.StrategicMergePatchType, payload, metav1.PatchOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to patch the secret: %s", err)
 	}
