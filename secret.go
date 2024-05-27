@@ -8,7 +8,6 @@ import (
 )
 
 func (c *DNSProviderSolver) getAccessToken() string {
-
 	secret, err := c.client.CoreV1().Secrets(Namespace).Get(context.Background(), nameSecret, metav1.GetOptions{})
 	if err != nil {
 		klog.Errorf("Сouldn't find or read the secret in getAccessToken func: %s", err)
@@ -17,11 +16,9 @@ func (c *DNSProviderSolver) getAccessToken() string {
 	accessToken := string(secret.Data["ACCESS_TOKEN"])
 
 	return accessToken
-
 }
 
 func (c *DNSProviderSolver) getAppSecrets() (string, string) {
-
 	secret, err := c.client.CoreV1().Secrets(Namespace).Get(context.Background(), nameSecret, metav1.GetOptions{})
 	if err != nil {
 		klog.Errorf("Сouldn't find or read the secret in getAppSecrets func: %s", err)
@@ -31,11 +28,9 @@ func (c *DNSProviderSolver) getAppSecrets() (string, string) {
 	appSecret := string(secret.Data["APP_SECRET"])
 
 	return appID, appSecret
-
 }
 
 func (c *DNSProviderSolver) getRefreshToken() string {
-
 	secret, err := c.client.CoreV1().Secrets(Namespace).Get(context.Background(), nameSecret, metav1.GetOptions{})
 	if err != nil {
 		klog.Errorf("Сouldn't find or read the secret in getRefreshToken func: %s", err)
@@ -44,5 +39,4 @@ func (c *DNSProviderSolver) getRefreshToken() string {
 	refreshToken := string(secret.Data["REFRESH_TOKEN"])
 
 	return refreshToken
-
 }

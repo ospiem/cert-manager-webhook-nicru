@@ -70,7 +70,8 @@ func (c *DNSProviderSolver) Present(cr *v1alpha1.ChallengeRequest) error {
 		return fmt.Errorf("failed to get service name for zone %s: %w", zoneName, err)
 	}
 
-	klog.Infof("Call function Present: namespace=%s, zone=%s, fqdn=%s", cr.ResourceNamespace, cr.ResolvedZone, cr.ResolvedFQDN)
+	klog.Infof("Call function Present: namespace=%s, zone=%s, fqdn=%s",
+		cr.ResourceNamespace, cr.ResolvedZone, cr.ResolvedFQDN)
 
 	cfg, err := loadConfig(cr.Config)
 	if err != nil {
@@ -94,9 +95,9 @@ func (c *DNSProviderSolver) CleanUp(cr *v1alpha1.ChallengeRequest) error {
 	domainName := fmt.Sprintf(".%s", cr.ResolvedZone)
 	recordName := strings.TrimSuffix(cr.ResolvedFQDN, domainName)
 
-	rrId, err := c.getRecord(ServiceName, zoneName, recordName)
+	rrID, err := c.getRecord(ServiceName, zoneName, recordName)
 	if err != nil {
-		return fmt.Errorf("failed to get rrId: %s", err)
+		return fmt.Errorf("failed to get rrID: %w", err)
 	}
 
 	cfg, err := loadConfig(cr.Config)
@@ -107,7 +108,7 @@ func (c *DNSProviderSolver) CleanUp(cr *v1alpha1.ChallengeRequest) error {
 	klog.Infof("Decoded configuration %v", cfg)
 	klog.Infof("Delete for entry=%s, domain=%s, key=%s", cr.ResolvedFQDN, cr.ResolvedZone, cr.Key)
 
-	err = c.deleteRecord(ServiceName, zoneName, rrId)
+	err = c.deleteRecord(ServiceName, zoneName, rrID)
 	if err != nil {
 		return fmt.Errorf("failed to delete the record: %w", err)
 	}
@@ -120,7 +121,6 @@ func (c *DNSProviderSolver) Name() string {
 }
 
 func (c *DNSProviderSolver) Initialize(kubeClientConfig *rest.Config, _ <-chan struct{}) error {
-
 	cl, err := kubernetes.NewForConfig(kubeClientConfig)
 	if err != nil {
 		return fmt.Errorf("k8s clientset: %w", err)

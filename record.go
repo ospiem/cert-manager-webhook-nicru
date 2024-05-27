@@ -33,7 +33,6 @@ func (c *DNSProviderSolver) Txt(recordName, serviceName, zoneName, content strin
 }
 
 func (c *DNSProviderSolver) createRecord(request *Request, serviceName, zoneName string) error {
-
 	var zone Zone
 	accessToken := c.getAccessToken()
 
@@ -69,7 +68,7 @@ func (c *DNSProviderSolver) createRecord(request *Request, serviceName, zoneName
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal body: %w", err)
 	}
-	rrId := zone.Data.Zone[0].RR[0].ID
+	rrID := zone.Data.Zone[0].RR[0].ID
 	if zone.Status != "success" {
 		return fmt.Errorf("failed to create record: status does not indicate success")
 	}
@@ -78,7 +77,7 @@ func (c *DNSProviderSolver) createRecord(request *Request, serviceName, zoneName
 	if err != nil {
 		return fmt.Errorf("failed to commit the zone: %w", err)
 	}
-	klog.Infof("Record successfully added. rrId=%s", rrId)
+	klog.Infof("Record successfully added. rrID=%s", rrID)
 	return nil
 }
 
@@ -108,28 +107,28 @@ func (c *DNSProviderSolver) getRecord(serviceName, zoneName, recordName string) 
 
 	err = xml.Unmarshal(body, &zone)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to unmarshal: %w", err)
 	}
 
-	var rrId string
+	var rrID string
 	for i := 0; i < len(zone.Data.Zone); i++ {
 		for j := 0; j < len(zone.Data.Zone[i].RR); j++ {
 			if zone.Data.Zone[i].RR[j].Name == recordName {
-				rrId = zone.Data.Zone[i].RR[j].ID
+				rrID = zone.Data.Zone[i].RR[j].ID
 			}
 		}
 	}
 
-	if rrId == "" {
+	if rrID == "" {
 		return "", fmt.Errorf("record not found")
 	}
-	return rrId, nil
+	return rrID, nil
 }
 
-func (c *DNSProviderSolver) deleteRecord(serviceName, zoneName, rrId string) error {
+func (c *DNSProviderSolver) deleteRecord(serviceName, zoneName, rrID string) error {
 	var response Response
 	accessToken := c.getAccessToken()
-	url := fmt.Sprintf(urlDeleteRecord, serviceName, zoneName, rrId)
+	url := fmt.Sprintf(urlDeleteRecord, serviceName, zoneName, rrID)
 
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
@@ -175,7 +174,7 @@ func (c *DNSProviderSolver) Commit(serviceName, zoneName string) error {
 
 	req, err := http.NewRequest(http.MethodPost, url, nil)
 	if err != nil {
-		return fmt.Errorf("failed to generate request: %s", err)
+		return fmt.Errorf("failed to generate request: %w", err)
 	}
 
 	header := fmt.Sprintf("Bearer %s", accessToken)
@@ -184,18 +183,18 @@ func (c *DNSProviderSolver) Commit(serviceName, zoneName string) error {
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("request failed: %s", err)
+		return fmt.Errorf("request failed: %w", err)
 	}
 
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read body: %s", err)
+		return fmt.Errorf("failed to read body: %w", err)
 	}
 
 	err = xml.Unmarshal(body, &response)
 	if err != nil {
-		return fmt.Errorf("failed to unmarhal body: %s", err)
+		return fmt.Errorf("failed to unmarhal body: %w", err)
 	}
 
 	if response.Status != "success" {
