@@ -107,6 +107,14 @@ spec:
     -  *.my-domain-test.ru
 ```
 
+# Known issues
+
+```
+Error presenting challenge: the server is currently unable to handle the request (post nicru-dns.acme.nic.ru)
+```
+This error may indicate that there is a failure to communicate with APIService v1alpha1.acme.nic.ru. In this case, `insecureSkipTLSVerify: true` parameter in apiservice.yaml may help.
+
+
 # Community
 
 Please feel free to contact us if you have any questions.
