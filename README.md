@@ -49,6 +49,10 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 *  where `VERSION` is necessary version (for example, v1.10.1 )
 
 ### Install the webhook
+
+**NOTE**: The kubernetes resources used to install the Webhook should be deployed within the same namespace as the cert-manager.
+
+
 ```shell
 git clone https://github.com/flant/cert-manager-webhook-nicru.git
 ```
