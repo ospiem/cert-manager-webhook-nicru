@@ -49,6 +49,10 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 *  where `VERSION` is necessary version (for example, v1.10.1 )
 
 ### Install the webhook
+
+**NOTE**: The kubernetes resources used to install the Webhook should be deployed within the same namespace as the cert-manager.
+
+
 ```shell
 git clone https://github.com/flant/cert-manager-webhook-nicru.git
 ```
@@ -102,6 +106,14 @@ spec:
   dnsNames:
     -  *.my-domain-test.ru
 ```
+
+# Known issues
+
+```
+Error presenting challenge: the server is currently unable to handle the request (post nicru-dns.acme.nic.ru)
+```
+This error may indicate that there is a failure to communicate with APIService v1alpha1.acme.nic.ru. In this case, `insecureSkipTLSVerify: true` parameter in apiservice.yaml may help.
+
 
 # Community
 

@@ -1,7 +1,7 @@
 groupName: acme.nic.ru
 
 certManager:
-  namespace: changeme
+  namespace: cert-manager
   serviceAccountName: cert-manager
 
 replicaCount: 1
